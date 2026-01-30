@@ -1,10 +1,13 @@
 version: "3.8"
+
 services:
   web:
     image: nginx:alpine
     container_name: lab_nginx
     ports:
       - "8080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
     restart: unless-stopped
 
   db:
@@ -12,8 +15,8 @@ services:
     container_name: lab_postgres
     environment:
       POSTGRES_USER: labuser
-      POSTGRES_PASSWORD: changeinenv
-      POSTGRES_DB: labu_db
+      POSTGRES_PASSWORD: lab_pass_ChangeMe
+      POSTGRES_DB: labdb
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  validate-and-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Docker and Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io docker-compose
+          sudo systemctl start docker
+
+      - name: Validate docker-compose file
+        run: docker-compose config
+
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Show running containers
+        run: docker ps
+
+      - name: HTTP smoke test (nginx)
+        run: |
+          curl -I http://localhost:8080 | head -n 1
+
+      - name: Postgres smoke test
+        run: |
+          docker exec lab_postgres pg_isready -U labuser -d labdb
